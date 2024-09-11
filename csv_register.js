@@ -86,10 +86,24 @@ function loadCSVList() {
   });
 }
 
-// リストにアイテムを追加する関数
-function addItemToList(item) {
-  const ul = document.getElementById('csvList'); // <ul>要素を取得
-  const li = document.createElement('li'); // 新しい<li>を作成
-  li.textContent = item; // <li>に内容を追加
-  ul.appendChild(li); // <ul>に<li>を追加
+// CSVリストをロードしてリンクを表示する関数
+function loadCSVList() {
+  const ul = document.getElementById('csvList'); // CSVリストを表示する<ul>要素を取得
+  ul.innerHTML = ''; // 既存のリストをクリア
+
+  db.collection('csvFiles').get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      const li = document.createElement('li'); // 新しい<li>要素を作成
+      const link = document.createElement('a'); // <a>要素を作成
+
+      link.textContent = `検品実行: ${doc.id}`; // リンクテキストを設定
+      link.href = `picking_list.html?id=${doc.id}`; // 検品ページへのリンクを設定
+      link.target = '_blank'; // 新しいタブで開くように設定
+
+      li.appendChild(link); // <li>にリンクを追加
+      ul.appendChild(li); // <ul>に<li>を追加
+    });
+  }).catch((error) => {
+    console.error('Error getting documents: ', error);
+  });
 }
