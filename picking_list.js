@@ -8,11 +8,14 @@ function loadPickingList() {
 
   db.collection('csvFiles').doc(csvId).get().then(doc => {
     if (doc.exists) {
-      pickingData = doc.data().data; // Firestoreから取得したデータを格納
+      pickingData = doc.data().data;
+      console.log(pickingData); // データ構造を確認するためにコンソールに出力
       renderPickingList(); // ピッキングリストを表示
     } else {
       alert("データが見つかりませんでした。");
     }
+  }).catch(error => {
+    console.error("Firestoreからデータ取得中にエラーが発生しました: ", error);
   });
 }
 
