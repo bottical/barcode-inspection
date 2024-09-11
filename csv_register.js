@@ -1,6 +1,6 @@
 function uploadCSV() {
   const fileInput = document.getElementById('fileInput');
-  
+
   if (!fileInput) {
     console.error("ファイル入力要素が見つかりません。");
     alert("ファイル入力要素が見つかりません。");
