@@ -1,43 +1,41 @@
-// 検品ページでIDからFirestoreのデータを取得して表示する
-function loadPickingData() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const id = urlParams.get('id'); // クエリパラメータからIDを取得
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ピッキングリスト</title>
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Firebase SDKのインポート -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="firebase_setup.js"></script> <!-- Firebase設定ファイル -->
+</head>
+</head>
+<body>
 
-  if (id) {
-    db.collection('csvFiles').doc(id).get().then((doc) => {
-      if (doc.exists) {
-        const data = doc.data().data;
-        console.log("検品データ: ", data);
-        // ここで検品データを画面に表示する処理を行う
-        renderPickingList(data); // 例: 検品リストを表示する関数
-      } else {
-        console.log("データが見つかりませんでした");
-      }
-    }).catch((error) => {
-      console.error('Error getting document:', error);
-    });
-  } else {
-    console.log("IDが指定されていません");
-  }
-}
+<div class="container">
+  <h1>ピッキングリスト</h1>
 
-// 検品データを表示する関数（例）
-function renderPickingList(data) {
-  const container = document.getElementById('pickingListContainer'); // 検品リストを表示するコンテナ要素
-  container.innerHTML = ''; // 既存の内容をクリア
+  <!-- バーコード入力フォーム -->
+  <div>
+    <label for="barcodeInput">バーコードを入力してください:</label>
+    <input type="text" id="barcodeInput" />
+    <button onclick="checkBarcode()">検品</button>
+    <p id="errorMessage" class="error-message"></p>
+  </div>
 
-  // 各ピッキングデータを表示
-  for (const [pickingNo, details] of Object.entries(data)) {
-    const section = document.createElement('section');
-    section.innerHTML = `
-      <h3>ピッキング番号: ${pickingNo}</h3>
-      <p>顧客名: ${details.customerName}</p>
-      <ul>
-        ${details.items.map(item => `
-          <li>商品: ${item.productName}, 数量: ${item.quantity}, バーコード: ${item.barcode}</li>
-        `).join('')}
-      </ul>
-    `;
-    container.appendChild(section);
-  }
-}
+  <div id="pickingList" class="list"></div>
+
+  <div class="button-container">
+    <button id="prevButton" onclick="previous()" disabled>前へ</button>
+    <button id="nextButton" onclick="next()" disabled>次へ</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="firebase_setup.js"></script>
+<script src="picking_list.js"></script>
+
+</body>
+</html>
