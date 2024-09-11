@@ -46,7 +46,7 @@ body {
 }
 
 .item span {
-  flex-basis: 50%; /* 各要素の幅を揃える */
+  flex-basis: 60%; /* 各要素の幅を揃える */
   text-align: left;
 }
 
@@ -57,5 +57,5 @@ body {
 
 .item .quantity {
   text-align: right; /* 数量は右揃え */
-  flex-basis: 20%;
+  flex-basis: 10%;
 }
