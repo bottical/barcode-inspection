@@ -10,22 +10,31 @@ function uploadCSV() {
 
   const reader = new FileReader();
   
-  reader.onload = function(e) {
+reader.onload = function(e) {
     const text = e.target.result;
-    const rows = text.split('\n').slice(1).map(row => row.split(',')); // CSVデータ解析
+    const rows = text.split('\n').slice(1).map(row => row.split(','));
+
+    // Firestoreに保存するためのデータ構造を調整
+    const dataToSave = rows.map(row => ({
+        pickingNo: row[19],
+        customerName: row[6],
+        productName: row[10],
+        quantity: row[13],
+        barcode: row[82]
+    }));
 
     // Firestoreに保存
     db.collection('csvFiles').add({
-      fileName: file.name,
-      data: rows,
-      uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
+        fileName: file.name,
+        data: dataToSave,
+        uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
-      alert("CSVファイルが登録されました！");
-      loadCSVList();
+        alert("CSVファイルが登録されました！");
+        loadCSVList();
     }).catch(error => {
-      console.error("Error writing document: ", error);
+        console.error("Error writing document: ", error);
     });
-  };
+};
 
   reader.readAsText(file, 'UTF-8');
 }
