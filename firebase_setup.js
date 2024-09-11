@@ -1,5 +1,5 @@
-// Firebaseの初期化コード（重複定義の回避）
-if (!firebase.apps.length) {
+// Firebase設定とFirestoreインスタンス作成
+if (!window.db) { // すでにdbが定義されているか確認
   const firebaseConfig = {
     apiKey: "AIzaSyDNLyIJYdnKFPZxouhcUZPQf_UwN0afSY4",
     authDomain: "barcode-inspection.firebaseapp.com",
@@ -9,12 +9,10 @@ if (!firebase.apps.length) {
     appId: "1:451122231472:web:fb7ded68d1b25c33166375"
   };
 
-  // Firebase初期化
-  firebase.initializeApp(firebaseConfig);
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
 
-  // Firestoreインスタンスを作成
-  const db = firebase.firestore();
+  // Firestoreインスタンスを作成してグローバルに保存
+  window.db = firebase.firestore();
 }
-
-// Firestoreインスタンスが既に作成されていれば、それを再利用
-const db = firebase.firestore();
