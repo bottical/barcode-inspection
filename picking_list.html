@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ピッキングリスト</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>ピッキングリスト</h1>
+
+  <!-- バーコード入力フォーム -->
+  <div>
+    <label for="barcodeInput">バーコードを入力してください:</label>
+    <input type="text" id="barcodeInput" />
+    <button onclick="checkBarcode()">検品</button>
+    <p id="errorMessage" class="error-message"></p>
+  </div>
+
+  <div id="pickingList" class="list"></div>
+
+  <div class="button-container">
+    <button id="prevButton" onclick="previous()" disabled>前へ</button>
+    <button id="nextButton" onclick="next()" disabled>次へ</button>
+  </div>
+</div>
+
+<script src="firebase_setup.js"></script>
+<script src="picking_list.js"></script>
+
+</body>
+</html>
