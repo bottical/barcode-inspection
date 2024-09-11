@@ -1,6 +1,26 @@
 let pickingData = [];
 let currentIndex = 0;
 let currentCheckedBarcodes = [];
+let pickingData = [];
+let currentIndex = 0;
+
+// Firestoreからデータを取得
+function loadPickingList() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const csvId = urlParams.get('csvId');
+
+  db.collection('csvFiles').doc(csvId).get().then(doc => {
+    if (doc.exists) {
+      pickingData = doc.data().data;
+      renderPickingList();
+    } else {
+      alert("データが見つかりませんでした。");
+    }
+  });
+}
+
+// 残りの検品機能は以前のscript.jsと同じ
+
 
 // CSV読み込み
 function loadCSV() {
