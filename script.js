@@ -15,11 +15,12 @@ function loadCSV() {
       const customerName = row[6]; // 出荷先名
       const productName = row[10]; // 商品名
       const quantity = row[13]; // 出荷引当数
+      const barcode = row[82]; // 83列目のバーコード
 
       if (!acc[pickingNo]) {
         acc[pickingNo] = { customerName, items: [] };
       }
-      acc[pickingNo].items.push({ productName, quantity });
+      acc[pickingNo].items.push({ productName, quantity, barcode });
 
       return acc;
     }, {});
@@ -56,7 +57,9 @@ function renderPickingList() {
   
   const itemList = pickingInfo.items.map(item => `
     <li class="item">
-      <span>${item.productName}</span><span class="highlight">${item.quantity}</span>
+      <span>${item.productName}</span>
+      <span class="highlight">${item.barcode}</span>
+      <span class="highlight">${item.quantity}</span>
     </li>
   `).join('');
 
