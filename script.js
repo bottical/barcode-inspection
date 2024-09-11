@@ -1,5 +1,6 @@
 let pickingData = [];
 let currentIndex = 0;
+let currentCheckedBarcodes = [];
 
 // CSV読み込み
 function loadCSV() {
@@ -20,7 +21,7 @@ function loadCSV() {
       if (!acc[pickingNo]) {
         acc[pickingNo] = { customerName, items: [] };
       }
-      acc[pickingNo].items.push({ productName, quantity, barcode });
+      acc[pickingNo].items.push({ productName, quantity, barcode, checked: false });
 
       return acc;
     }, {});
@@ -29,6 +30,34 @@ function loadCSV() {
   };
 
   reader.readAsText(fileInput.files[0], 'UTF-8');
+}
+
+// バーコード検品機能
+function checkBarcode() {
+  const barcodeInput = document.getElementById('barcodeInput').value.trim();
+  const errorMessage = document.getElementById('errorMessage');
+  const pickingNo = Object.keys(pickingData)[currentIndex];
+  const pickingInfo = pickingData[pickingNo];
+
+  let found = false;
+
+  // 現在のピッキングリスト内でバーコードをチェック
+  pickingInfo.items.forEach(item => {
+    if (item.barcode === barcodeInput && !item.checked) {
+      item.checked = true;
+      found = true;
+    }
+  });
+
+  // 結果によって表示を更新
+  if (found) {
+    errorMessage.textContent = "";
+    document.getElementById('barcodeInput').value = "";
+    renderPickingList(); // 更新
+    checkIfComplete(); // 完了チェック
+  } else {
+    errorMessage.textContent = "バーコードが見つかりませんでした。";
+  }
 }
 
 // ピッキングリストを1ページごとに表示
@@ -56,7 +85,7 @@ function renderPickingList() {
   `;
   
   const itemList = pickingInfo.items.map(item => `
-    <li class="item">
+    <li class="item ${item.checked ? 'checked' : ''}">
       <span>${item.productName}</span>
       <span class="barcode">${item.barcode}</span>
       <span class="quantity">${item.quantity}</span>
@@ -68,6 +97,20 @@ function renderPickingList() {
 
   document.getElementById('prevButton').disabled = currentIndex === 0;
   document.getElementById('nextButton').disabled = currentIndex === pickingKeys.length - 1;
+}
+
+// 全てのバーコードが検品されたかチェック
+function checkIfComplete() {
+  const pickingNo = Object.keys(pickingData)[currentIndex];
+  const pickingInfo = pickingData[pickingNo];
+
+  const allChecked = pickingInfo.items.every(item => item.checked);
+  if (allChecked) {
+    setTimeout(() => {
+      alert('検品完了！次のピッキングNoに移行します。');
+      next();
+    }, 500);
+  }
 }
 
 function previous() {
