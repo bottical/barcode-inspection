@@ -122,3 +122,4 @@ function next() {
 
 // ページロード時にFirestoreからピッキングリストを読み込む
 window.onload = loadPickingList;
+
