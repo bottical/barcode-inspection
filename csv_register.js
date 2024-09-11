@@ -1,18 +1,33 @@
 // CSVファイルを読み込み、Firestoreに保存する関数
 function uploadCSV() {
   const fileInput = document.getElementById('fileInput');
+  
+  // fileInputが存在しない場合のエラーハンドリング
+  if (!fileInput) {
+    console.error("ファイル入力要素が見つかりません。HTMLに <input type='file' id='fileInput'> を追加してください。");
+    alert("ファイル入力要素が見つかりません。");
+    return;
+  }
+
   const file = fileInput.files[0];
+
+  // ファイルが選択されていない場合のエラーハンドリング
+  if (!file) {
+    alert("CSVファイルを選択してください。");
+    return;
+  }
+
   const reader = new FileReader();
 
   reader.onload = function(event) {
     const csvData = event.target.result;
     const parsedData = Papa.parse(csvData, { header: true }).data;
 
-    // ピッキング番号ごとにデータをグループ化する関数
+    // ピッキング番号ごとにデータをグループ化
     const groupedData = groupByPickingNo(parsedData);
 
     // Firestoreにデータを保存
-    const csvId = Date.now().toString(); // 一意のIDを生成（ここでは現在時刻を利用）
+    const csvId = Date.now().toString(); // 一意のIDを生成
     db.collection('csvFiles').doc(csvId).set({
       data: groupedData
     }).then(() => {
