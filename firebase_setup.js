@@ -1,5 +1,4 @@
 // Firebaseの初期化コード
-// Firebaseコンソールで取得した設定を使用してfirebaseを初期化します
 const firebaseConfig = {
   apiKey: "AIzaSyDNLyIJYdnKFPZxouhcUZPQf_UwN0afSY4",
   authDomain: "barcode-inspection.firebaseapp.com",
@@ -11,4 +10,6 @@ const firebaseConfig = {
 
 // Firebase初期化
 firebase.initializeApp(firebaseConfig);
+
+// Firestoreインスタンスを作成
 const db = firebase.firestore();
