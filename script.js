@@ -58,8 +58,8 @@ function renderPickingList() {
   const itemList = pickingInfo.items.map(item => `
     <li class="item">
       <span>${item.productName}</span>
-      <span class="highlight">${item.barcode}</span>
-      <span class="highlight">${item.quantity}</span>
+      <span class="barcode">${item.barcode}</span>
+      <span class="quantity">${item.quantity}</span>
     </li>
   `).join('');
 
