@@ -46,7 +46,7 @@ body {
 }
 
 .item span {
-  flex-basis: 40%; /* 各要素の幅を揃える */
+  flex-basis: 50%; /* 各要素の幅を揃える */
   text-align: left;
 }
 
