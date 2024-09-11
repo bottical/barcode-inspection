@@ -4,11 +4,11 @@ let currentIndex = 0; // 現在表示中のピッキング番号のインデッ�
 // Firestoreからデータを取得
 function loadPickingList() {
   const urlParams = new URLSearchParams(window.location.search);
-  const csvId = urlParams.get('csvId');
+  const csvId = urlParams.get('id'); // "id"というパラメータを取得
 
   // csvIdが存在しない場合、エラーメッセージを表示して処理を中断
   if (!csvId) {
-    console.error("csvIdが空です。URLに正しいIDが含まれているか確認してください。");
+    console.error("idが空です。URLに正しいIDが含まれているか確認してください。");
     return;
   }
 
@@ -26,6 +26,7 @@ function loadPickingList() {
     console.error("エラー:", error);
   });
 }
+
 
 
 
