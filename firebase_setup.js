@@ -11,7 +11,10 @@ if (!firebase.apps.length) {
 
   // Firebase初期化
   firebase.initializeApp(firebaseConfig);
+
+  // Firestoreインスタンスを作成
+  const db = firebase.firestore();
 }
 
-// Firestoreインスタンスを作成
+// Firestoreインスタンスが既に作成されていれば、それを再利用
 const db = firebase.firestore();
