@@ -7,9 +7,10 @@ const firebaseConfig = {
   messagingSenderId: "451122231472",
   appId: "1:451122231472:web:fb7ded68d1b25c33166375"
 };
-
-// Firebase初期化
-firebase.initializeApp(firebaseConfig);
+// Firebaseが初期化されていない場合のみ初期化
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 // Firestoreインスタンスを作成
 const db = firebase.firestore();
