@@ -70,14 +70,26 @@ function groupByPickingNo(data) {
   }, {});
 }
 
-// CSVリストをロードする関数（例示）
+// CSVリストをロードする関数
 function loadCSVList() {
+  const ul = document.getElementById('csvList'); // CSVリストを表示する<ul>要素を取得
+  ul.innerHTML = ''; // 既存のリストをクリア
+
   db.collection('csvFiles').get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
+      const li = document.createElement('li'); // 新しい<li>要素を作成
+      li.textContent = `ID: ${doc.id} - Data: ${JSON.stringify(doc.data().data)}`; // <li>の内容を設定
+      ul.appendChild(li); // <ul>に<li>を追加
     });
   }).catch((error) => {
     console.error('Error getting documents: ', error);
   });
 }
 
+// リストにアイテムを追加する関数
+function addItemToList(item) {
+  const ul = document.getElementById('csvList'); // <ul>要素を取得
+  const li = document.createElement('li'); // 新しい<li>を作成
+  li.textContent = item; // <li>に内容を追加
+  ul.appendChild(li); // <ul>に<li>を追加
+}
