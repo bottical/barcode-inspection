@@ -1,17 +1,14 @@
-// CSVファイルを読み込み、Firestoreに保存する関数
 function uploadCSV() {
   const fileInput = document.getElementById('fileInput');
   
-  // fileInputが存在しない場合のエラーハンドリング
   if (!fileInput) {
-    console.error("ファイル入力要素が見つかりません。HTMLに <input type='file' id='fileInput'> を追加してください。");
+    console.error("ファイル入力要素が見つかりません。");
     alert("ファイル入力要素が見つかりません。");
     return;
   }
 
   const file = fileInput.files[0];
 
-  // ファイルが選択されていない場合のエラーハンドリング
   if (!file) {
     alert("CSVファイルを選択してください。");
     return;
@@ -23,11 +20,17 @@ function uploadCSV() {
     const csvData = event.target.result;
     const parsedData = Papa.parse(csvData, { header: true }).data;
 
+    // パースされたCSVデータを確認
+    console.log("パースされたデータ: ", parsedData);
+
     // ピッキング番号ごとにデータをグループ化
     const groupedData = groupByPickingNo(parsedData);
 
-    // Firestoreにデータを保存
+    // グループ化されたデータを確認
+    console.log("グループ化されたデータ: ", groupedData);
+
     const csvId = Date.now().toString(); // 一意のIDを生成
+
     db.collection('csvFiles').doc(csvId).set({
       data: groupedData
     }).then(() => {
@@ -44,9 +47,15 @@ function uploadCSV() {
 // ピッキング番号ごとにデータをグループ化する関数
 function groupByPickingNo(data) {
   return data.reduce((acc, item) => {
-    const { pickingNo, customerName, productName, quantity, barcode } = item;
+    const pickingNo = item.pickingNo || "不明"; // `pickingNo`がない場合は"不明"を使用
+    const customerName = item.customerName || "不明"; // `customerName`がない場合は"不明"を使用
+    const productName = item.productName || "不明";
+    const quantity = item.quantity || "0";
+    const barcode = item.barcode || "不明";
 
-    // まだこのピッキング番号がない場合は新しいエントリを作成
+    // フィールドのデフォルト値を確認
+    console.log({ pickingNo, customerName, productName, quantity, barcode });
+
     if (!acc[pickingNo]) {
       acc[pickingNo] = {
         customerName: customerName,
@@ -54,7 +63,6 @@ function groupByPickingNo(data) {
       };
     }
 
-    // 商品データを追加
     acc[pickingNo].items.push({
       productName: productName,
       quantity: quantity,
