@@ -3,35 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ピッキングリスト</title>
+  <title>CSV登録ページ</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <div class="container">
-  <h1>ピッキングリスト</h1>
+  <h1>CSVファイル登録</h1>
 
-  <!-- CSVファイル選択 -->
-  <input type="file" id="csvFileInput" accept=".csv" />
-  <button onclick="loadCSV()">CSV読み込み</button>
-
-  <!-- バーコード入力フォーム -->
+  <!-- CSVファイル選択フォーム -->
   <div>
-    <label for="barcodeInput">バーコードを入力してください:</label>
-    <input type="text" id="barcodeInput" />
-    <button onclick="checkBarcode()">検品</button>
-    <p id="errorMessage" class="error-message"></p>
+    <label for="csvFileInput">CSVファイルを選択してください:</label>
+    <input type="file" id="csvFileInput" accept=".csv" />
+    <button onclick="uploadCSV()">CSV登録</button>
   </div>
 
-  <div id="pickingList" class="list"></div>
+  <!-- 登録済みCSVの一覧 -->
+  <h2>登録済みCSVファイル一覧</h2>
+  <ul id="csvList"></ul>
 
-  <div class="button-container">
-    <button id="prevButton" onclick="previous()" disabled>前へ</button>
-    <button id="nextButton" onclick="next()" disabled>次へ</button>
-  </div>
 </div>
 
-<script src="script.js"></script>
+<script src="firebase_setup.js"></script> <!-- Firestore設定用 -->
+<script src="csv_register.js"></script>
 
 </body>
 </html>
