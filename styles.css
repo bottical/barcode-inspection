@@ -33,12 +33,16 @@ body {
 }
 
 .item {
-  display: flex; /* Flexboxを使用して横並びに */
-  align-items: center; /* 高さを揃える */
-  justify-content: space-between; /* 要素を左右に配置 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 10px;
   background-color: #f9f9f9;
   margin-bottom: 10px;
+}
+
+.item.checked {
+  background-color: #d4edda; /* 検品完了時の色 */
 }
 
 .item:nth-child(even) {
@@ -46,16 +50,20 @@ body {
 }
 
 .item span {
-  flex-basis: 60%; /* 各要素の幅を揃える */
+  flex-basis: 60%;
   text-align: left;
 }
 
 .item .barcode {
-  text-align: center; /* バーコードは中央に配置 */
+  text-align: center;
   flex-basis: 30%;
 }
 
 .item .quantity {
-  text-align: right; /* 数量は右揃え */
+  text-align: right;
   flex-basis: 10%;
+}
+
+.error-message {
+  color: red;
 }
