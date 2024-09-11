@@ -14,14 +14,14 @@ reader.onload = function(e) {
     const text = e.target.result;
     const rows = text.split('\n').slice(1).map(row => row.split(','));
 
-    // Firestoreに保存するためのデータ構造を調整
+    // フィールドがundefinedかどうかを確認して保存するデータを作成
     const dataToSave = rows.map(row => ({
-        pickingNo: row[19],
-        customerName: row[6],
-        productName: row[10],
-        quantity: row[13],
-        barcode: row[82]
-    }));
+        pickingNo: row[19] ? row[19] : null,
+        customerName: row[6] ? row[6] : null,
+        productName: row[10] ? row[10] : null,
+        quantity: row[13] ? row[13] : null,
+        barcode: row[82] ? row[82] : null
+    })).filter(item => item.pickingNo && item.barcode); // pickingNoとbarcodeが存在する行のみ保存
 
     // Firestoreに保存
     db.collection('csvFiles').add({
