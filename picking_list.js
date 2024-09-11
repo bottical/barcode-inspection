@@ -6,18 +6,26 @@ function loadPickingList() {
   const urlParams = new URLSearchParams(window.location.search);
   const csvId = urlParams.get('csvId');
 
-  db.collection('csvFiles').doc(csvId).get().then(doc => {
-    if (doc.exists) {
-      pickingData = doc.data().data;
-      console.log(pickingData); // データ構造を確認するためにコンソールに出力
-      renderPickingList(); // ピッキングリストを表示
-    } else {
-      alert("データが見つかりませんでした。");
+function loadPickingList(pickingListId) {
+    if (!pickingListId) {
+        console.error("pickingListIdが空です。");
+        return; // ドキュメントIDがない場合、処理を中断
     }
-  }).catch(error => {
-    console.error("Firestoreからデータ取得中にエラーが発生しました: ", error);
-  });
+
+    const docRef = db.collection('pickingLists').doc(pickingListId);
+    
+    docRef.get().then((doc) => {
+        if (doc.exists) {
+            console.log("データ:", doc.data());
+            // データの処理
+        } else {
+            console.log("指定されたピッキングリストが存在しません。");
+        }
+    }).catch((error) => {
+        console.error("エラー:", error);
+    });
 }
+
 
 // バーコード検品機能
 function checkBarcode() {
