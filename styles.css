@@ -42,7 +42,7 @@ body {
 }
 
 .item.checked {
-  background-color: #d4edda; /* 検品完了時の色 */
+  background-color: #d4edda !important; /* 検品完了時の色を優先する */
 }
 
 .item:nth-child(even) {
