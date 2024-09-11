@@ -3,117 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>バーコード検品デモ</title>
+  <title>ピッキングリスト</title>
   <style>
     body {
       font-family: Arial, sans-serif;
     }
-    #progress {
-      margin-top: 20px;
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
     }
-    .progress-bar {
-      width: 100%;
-      background-color: #f3f3f3;
+    .list {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
     }
-    .progress {
-      width: 0%;
-      height: 24px;
-      background-color: #4caf50;
-      text-align: center;
-      color: white;
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .highlight {
+      font-size: 1.5em;
+      color: #007bff;
     }
     .item-list {
-      margin-top: 20px;
+      list-style-type: none;
+      padding: 0;
     }
     .item {
+      padding: 10px;
+      background-color: #f9f9f9;
       margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .item:nth-child(even) {
+      background-color: #eee;
+    }
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
     }
   </style>
 </head>
 <body>
 
-  <h1>バーコード検品</h1>
-
-  <!-- CSVファイル選択 -->
-  <input type="file" id="csvFileInput" accept=".csv" />
-  <button onclick="loadCSV()">CSV読み込み</button>
-
-  <!-- 検品リスト表示 -->
-  <div id="itemList" class="item-list"></div>
-
-  <!-- 検品進捗表示 -->
-  <div id="progress">
-    <div class="progress-bar">
-      <div id="progressBar" class="progress">0%</div>
+<div class="container">
+  <h1>ピッキングリスト</h1>
+  <div class="list">
+    <div class="list-header">
+      <div>
+        <h2>ピッキングNO: <span id="pickingNo"></span></h2>
+        <p>購入者: <span id="customerName"></span></p>
+      </div>
+      <div id="currentIndex"></div>
+    </div>
+    <ul id="itemList" class="item-list"></ul>
+    <div class="button-container">
+      <button id="prevButton" onclick="previous()">前へ</button>
+      <button id="nextButton" onclick="next()">次へ</button>
     </div>
   </div>
+</div>
 
-  <!-- 検品バーコード入力 -->
-  <div>
-    <h2>バーコードをスキャンしてください:</h2>
-    <input type="text" id="barcodeInput" oninput="checkBarcode()" placeholder="バーコードを入力" />
-  </div>
+<script>
+  const simplifiedData = [
+    {
+      pickingNo: 'PC00004144094',
+      customerName: '菅原寛珠',
+      items: [
+        { productName: '使い方', quantity: '1' },
+        { productName: 'ダイアリーチェックシート(2)', quantity: '1' },
+        { productName: '特別優待券＆サポート商品紹介', quantity: '1' },
+        { productName: 'NEWﾅｲﾄｱｲﾎﾞｰﾃ2(3mL/ｱｲｽﾃｨｯｸ付)', quantity: '1' }
+      ]
+    },
+    // ... 他のデータ ...
+  ];
 
-  <script>
-    let items = [];
-    let checkedItems = 0;
+  let currentIndex = 0;
 
-    // CSV読み込み
-    function loadCSV() {
-      const fileInput = document.getElementById('csvFileInput');
-      const reader = new FileReader();
-      
-      reader.onload = function(e) {
-        const text = e.target.result;
-        const rows = text.split('\n').map(row => row.split(','));
-        
-        items = rows.map(row => {
-          return {
-            pickingNo: row[0], // ピッキングNO (例: 出荷指示日)
-            itemName: row[9],  // 商品名 (例: 商品ID)
-            buyer: row[6],     // 購入者氏名 (例: 出荷先名)
-            barcode: row[9]    // 商品IDをバーコードと仮定
-          };
-        });
+  function renderPickingList() {
+    const currentData = simplifiedData[currentIndex];
+    const pickingNoElement = document.getElementById('pickingNo');
+    const customerNameElement = document.getElementById('customerName');
+    const itemListElement = document.getElementById('itemList');
+    const currentIndexElement = document.getElementById('currentIndex');
+    
+    const prefix = currentData.pickingNo.slice(0, -4);
+    const suffix = currentData.pickingNo.slice(-4);
 
-        displayItems();
-      };
+    pickingNoElement.innerHTML = `${prefix}<span class="highlight">${suffix}</span>`;
+    customerNameElement.textContent = currentData.customerName;
+    
+    itemListElement.innerHTML = '';
+    currentData.items.forEach(item => {
+      const itemElement = document.createElement('li');
+      itemElement.className = 'item';
+      itemElement.innerHTML = `<span>${item.productName}</span><span class="highlight">${item.quantity}</span>`;
+      itemListElement.appendChild(itemElement);
+    });
 
-      reader.readAsText(fileInput.files[0], 'UTF-8');
+    currentIndexElement.textContent = `${currentIndex + 1} / ${simplifiedData.length}`;
+    
+    document.getElementById('prevButton').disabled = currentIndex === 0;
+    document.getElementById('nextButton').disabled = currentIndex === simplifiedData.length - 1;
+  }
+
+  function previous() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderPickingList();
     }
+  }
 
-    // 検品リスト表示
-    function displayItems() {
-      const itemList = document.getElementById('itemList');
-      itemList.innerHTML = '';
-
-      items.forEach((item, index) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'item';
-        itemDiv.id = 'item-' + index;
-        itemDiv.innerHTML = `<strong>ピッキングNO:</strong> ${item.pickingNo}, <strong>商品名:</strong> ${item.itemName}, <strong>購入者氏名:</strong> ${item.buyer}`;
-        itemList.appendChild(itemDiv);
-      });
+  function next() {
+    if (currentIndex < simplifiedData.length - 1) {
+      currentIndex++;
+      renderPickingList();
     }
+  }
 
-    // バーコード検品
-    function checkBarcode() {
-      const barcodeInput = document.getElementById('barcodeInput').value;
-      const progressBar = document.getElementById('progressBar');
-      
-      items.forEach((item, index) => {
-        if (item.barcode === barcodeInput && !item.checked) {
-          item.checked = true;
-          checkedItems++;
-          document.getElementById('item-' + index).style.textDecoration = 'line-through'; // 検品済みアイテムに線を引く
-        }
-      });
-
-      const progressPercent = (checkedItems / items.length) * 100;
-      progressBar.style.width = progressPercent + '%';
-      progressBar.textContent = Math.round(progressPercent) + '%';
-    }
-  </script>
+  renderPickingList();
+</script>
 
 </body>
 </html>
