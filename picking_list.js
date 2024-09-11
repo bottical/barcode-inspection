@@ -1,43 +1,124 @@
-// 検品ページでIDからFirestoreのデータを取得して表示する
-function loadPickingData() {
+let pickingData = []; // ピッキングデータの配列
+let currentIndex = 0; // 現在表示中のピッキング番号のインデックス
+
+// Firestoreからデータを取得
+function loadPickingList() {
   const urlParams = new URLSearchParams(window.location.search);
-  const id = urlParams.get('id'); // クエリパラメータからIDを取得
+  const csvId = urlParams.get('csvId');
 
-  if (id) {
-    db.collection('csvFiles').doc(id).get().then((doc) => {
-      if (doc.exists) {
-        const data = doc.data().data;
-        console.log("検品データ: ", data);
-        // ここで検品データを画面に表示する処理を行う
-        renderPickingList(data); // 例: 検品リストを表示する関数
-      } else {
-        console.log("データが見つかりませんでした");
-      }
-    }).catch((error) => {
-      console.error('Error getting document:', error);
-    });
+  db.collection('csvFiles').doc(csvId).get().then(doc => {
+    if (doc.exists) {
+      pickingData = doc.data().data;
+      console.log(pickingData); // データ構造を確認するためにコンソールに出力
+      renderPickingList(); // ピッキングリストを表示
+    } else {
+      alert("データが見つかりませんでした。");
+    }
+  }).catch(error => {
+    console.error("Firestoreからデータ取得中にエラーが発生しました: ", error);
+  });
+}
+
+// バーコード検品機能
+function checkBarcode() {
+  const barcodeInput = document.getElementById('barcodeInput').value.trim();
+  const errorMessage = document.getElementById('errorMessage');
+  const pickingNo = Object.keys(pickingData)[currentIndex];
+  const pickingInfo = pickingData[pickingNo];
+
+  let found = false;
+
+  // 現在のピッキングリスト内でバーコードをチェック
+  pickingInfo.items.forEach(item => {
+    if (item.barcode === barcodeInput && !item.checked) {
+      item.checked = true; // 検品完了をマーク
+      found = true;
+    }
+  });
+
+  // 結果によって表示を更新
+  if (found) {
+    errorMessage.textContent = "";
+    document.getElementById('barcodeInput').value = "";
+    renderPickingList(); // 更新
+    checkIfComplete(); // 検品完了か確認
   } else {
-    console.log("IDが指定されていません");
+    errorMessage.textContent = "バーコードが見つかりませんでした。";
   }
 }
 
-// 検品データを表示する関数（例）
-function renderPickingList(data) {
-  const container = document.getElementById('pickingListContainer'); // 検品リストを表示するコンテナ要素
-  container.innerHTML = ''; // 既存の内容をクリア
+// ピッキングリストを1ページごとに表示
+function renderPickingList() {
+  const pickingListElement = document.getElementById('pickingList');
+  pickingListElement.innerHTML = ''; // 前の内容をクリア
 
-  // 各ピッキングデータを表示
-  for (const [pickingNo, details] of Object.entries(data)) {
-    const section = document.createElement('section');
-    section.innerHTML = `
-      <h3>ピッキング番号: ${pickingNo}</h3>
-      <p>顧客名: ${details.customerName}</p>
-      <ul>
-        ${details.items.map(item => `
-          <li>商品: ${item.productName}, 数量: ${item.quantity}, バーコード: ${item.barcode}</li>
-        `).join('')}
-      </ul>
-    `;
-    container.appendChild(section);
+  const pickingKeys = Object.keys(pickingData);
+  if (pickingKeys.length === 0) return; // データがない場合は終了
+
+  const pickingNo = pickingKeys[currentIndex];
+  const pickingInfo = pickingData[pickingNo];
+  
+  // itemsが存在しない場合の処理
+  if (!pickingInfo || !pickingInfo.items) {
+    console.error('ピッキングデータにアイテムが存在しません');
+    return;
+  }
+
+  const pickingDiv = document.createElement('div');
+  pickingDiv.className = 'list';
+
+  const pickingHeader = `
+    <div class="list-header">
+      <div>
+        <h2>ピッキングNO: <span class="highlight">${pickingNo}</span></h2>
+        <p>購入者: ${pickingInfo.customerName}</p>
+      </div>
+      <div>${currentIndex + 1} / ${pickingKeys.length}</div>
+    </div>
+  `;
+  
+  const itemList = pickingInfo.items.map(item => `
+    <li class="item ${item.checked ? 'checked' : ''}">
+      <span>${item.productName}</span>
+      <span class="barcode">${item.barcode}</span>
+      <span class="quantity">${item.quantity}</span>
+    </li>
+  `).join('');
+
+  pickingDiv.innerHTML = pickingHeader + `<ul class="item-list">${itemList}</ul>`;
+  pickingListElement.appendChild(pickingDiv);
+
+  document.getElementById('prevButton').disabled = currentIndex === 0;
+  document.getElementById('nextButton').disabled = currentIndex === pickingKeys.length - 1;
+}
+
+// 全てのバーコードが検品されたかチェック
+function checkIfComplete() {
+  const pickingNo = Object.keys(pickingData)[currentIndex];
+  const pickingInfo = pickingData[pickingNo];
+
+  const allChecked = pickingInfo.items.every(item => item.checked);
+  if (allChecked) {
+    setTimeout(() => {
+      alert('検品完了！次のピッキングNoに移行します。');
+      next();
+    }, 500);
   }
 }
+
+function previous() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderPickingList();
+  }
+}
+
+function next() {
+  if (currentIndex < Object.keys(pickingData).length - 1) {
+    currentIndex++;
+    renderPickingList();
+  }
+}
+
+// ページロード時にFirestoreからピッキングリストを読み込む
+window.onload = loadPickingList;
