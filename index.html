@@ -64,6 +64,11 @@
 
 <div class="container">
   <h1>ピッキングリスト</h1>
+
+  <!-- CSVファイル選択 -->
+  <input type="file" id="csvFileInput" accept=".csv" />
+  <button onclick="loadCSV()">CSV読み込み</button>
+
   <div class="list">
     <div class="list-header">
       <div>
@@ -74,31 +79,45 @@
     </div>
     <ul id="itemList" class="item-list"></ul>
     <div class="button-container">
-      <button id="prevButton" onclick="previous()">前へ</button>
-      <button id="nextButton" onclick="next()">次へ</button>
+      <button id="prevButton" onclick="previous()" disabled>前へ</button>
+      <button id="nextButton" onclick="next()" disabled>次へ</button>
     </div>
   </div>
 </div>
 
 <script>
-  const simplifiedData = [
-    {
-      pickingNo: 'PC00004144094',
-      customerName: '菅原寛珠',
-      items: [
-        { productName: '使い方', quantity: '1' },
-        { productName: 'ダイアリーチェックシート(2)', quantity: '1' },
-        { productName: '特別優待券＆サポート商品紹介', quantity: '1' },
-        { productName: 'NEWﾅｲﾄｱｲﾎﾞｰﾃ2(3mL/ｱｲｽﾃｨｯｸ付)', quantity: '1' }
-      ]
-    },
-    // ... 他のデータ ...
-  ];
-
+  let pickingData = [];
   let currentIndex = 0;
 
+  // CSV読み込み
+  function loadCSV() {
+    const fileInput = document.getElementById('csvFileInput');
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      const text = e.target.result;
+      const rows = text.split('\n').map(row => row.split(','));
+      
+      pickingData = rows.map(row => {
+        return {
+          pickingNo: row[19],   // ピッキングNO
+          customerName: row[6], // 出荷先名
+          items: [
+            { productName: row[10], quantity: row[13] } // 商品名と出荷引当数
+          ]
+        };
+      });
+
+      if (pickingData.length > 0) {
+        renderPickingList();
+      }
+    };
+
+    reader.readAsText(fileInput.files[0], 'UTF-8');
+  }
+
   function renderPickingList() {
-    const currentData = simplifiedData[currentIndex];
+    const currentData = pickingData[currentIndex];
     const pickingNoElement = document.getElementById('pickingNo');
     const customerNameElement = document.getElementById('customerName');
     const itemListElement = document.getElementById('itemList');
@@ -118,10 +137,10 @@
       itemListElement.appendChild(itemElement);
     });
 
-    currentIndexElement.textContent = `${currentIndex + 1} / ${simplifiedData.length}`;
+    currentIndexElement.textContent = `${currentIndex + 1} / ${pickingData.length}`;
     
     document.getElementById('prevButton').disabled = currentIndex === 0;
-    document.getElementById('nextButton').disabled = currentIndex === simplifiedData.length - 1;
+    document.getElementById('nextButton').disabled = currentIndex === pickingData.length - 1;
   }
 
   function previous() {
@@ -132,13 +151,11 @@
   }
 
   function next() {
-    if (currentIndex < simplifiedData.length - 1) {
+    if (currentIndex < pickingData.length - 1) {
       currentIndex++;
       renderPickingList();
     }
   }
-
-  renderPickingList();
 </script>
 
 </body>
