@@ -1,61 +1,71 @@
-// CSVファイルをFirestoreにアップロードする機能
+// CSVファイルを読み込み、Firestoreに保存する関数
 function uploadCSV() {
-  const fileInput = document.getElementById('csvFileInput');
+  const fileInput = document.getElementById('fileInput');
   const file = fileInput.files[0];
-
-  if (!file) {
-    alert("ファイルを選択してください。");
-    return;
-  }
-
   const reader = new FileReader();
-  
-reader.onload = function(e) {
-    const text = e.target.result;
-    const rows = text.split('\n').slice(1).map(row => row.split(','));
 
-    // フィールドがundefinedかどうかを確認して保存するデータを作成
-    const dataToSave = rows.map(row => ({
-        pickingNo: row[19] ? row[19] : null,
-        customerName: row[6] ? row[6] : null,
-        productName: row[10] ? row[10] : null,
-        quantity: row[13] ? row[13] : null,
-        barcode: row[82] ? row[82] : null
-    })).filter(item => item.pickingNo && item.barcode); // pickingNoとbarcodeが存在する行のみ保存
+  reader.onload = function(event) {
+    const csvData = event.target.result;
+    const parsedData = Papa.parse(csvData, { header: true }).data;
 
-    // Firestoreに保存
-    db.collection('csvFiles').add({
-        fileName: file.name,
-        data: dataToSave,
-        uploadedAt: firebase.firestore.FieldValue.serverTimestamp()
+    // ピッキング番号ごとにデータをグループ化する関数
+    const groupedData = groupByPickingNo(parsedData);
+
+    // Firestoreにデータを保存
+    const csvId = Date.now().toString(); // 一意のIDを生成（ここでは現在時刻を利用）
+    db.collection('csvFiles').doc(csvId).set({
+      data: groupedData
     }).then(() => {
-        alert("CSVファイルが登録されました！");
-        loadCSVList();
-    }).catch(error => {
-        console.error("Error writing document: ", error);
+      alert('CSVデータがFirestoreに保存されました！');
+      loadCSVList(); // CSVリストを更新
+    }).catch((error) => {
+      console.error('Error writing document: ', error);
     });
-};
+  };
 
-  reader.readAsText(file, 'UTF-8');
+  reader.readAsText(file);
 }
 
-// 登録済みCSV一覧を表示
+// ピッキング番号ごとにデータをグループ化する関数
+function groupByPickingNo(data) {
+  return data.reduce((acc, item) => {
+    const { pickingNo, customerName, productName, quantity, barcode } = item;
+
+    // まだこのピッキング番号がない場合は新しいエントリを作成
+    if (!acc[pickingNo]) {
+      acc[pickingNo] = {
+        customerName: customerName,
+        items: []
+      };
+    }
+
+    // 商品データを追加
+    acc[pickingNo].items.push({
+      productName: productName,
+      quantity: quantity,
+      barcode: barcode
+    });
+
+    return acc;
+  }, {});
+}
+
+// Firestoreから保存されたCSVリストをロードする関数
 function loadCSVList() {
   const csvListElement = document.getElementById('csvList');
-  csvListElement.innerHTML = '';
+  csvListElement.innerHTML = ''; // 前のリストをクリア
 
-  db.collection('csvFiles').orderBy('uploadedAt', 'desc').get().then(snapshot => {
-    snapshot.forEach(doc => {
-      const data = doc.data();
+  db.collection('csvFiles').get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      const csvId = doc.id;
       const listItem = document.createElement('li');
       listItem.innerHTML = `
-        <span>${data.fileName}</span>
-        <a href="picking_list.html?csvId=${doc.id}">検品実行</a>
+        <a href="picking_list.html?csvId=${csvId}">CSV ${csvId}を検品</a>
       `;
       csvListElement.appendChild(listItem);
     });
   });
 }
 
-// 初回ロード時にCSVリストを読み込む
+// ページロード時にFirestoreからCSVリストを読み込む
 window.onload = loadCSVList;
