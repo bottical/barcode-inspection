@@ -4,61 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ピッキングリスト</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .list {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-    }
-    .list-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .highlight {
-      font-size: 1.5em;
-      color: #007bff;
-    }
-    .item-list {
-      list-style-type: none;
-      padding: 0;
-    }
-    .item {
-      padding: 10px;
-      background-color: #f9f9f9;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .item:nth-child(even) {
-      background-color: #eee;
-    }
-    .button-container {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:disabled {
-      background-color: #ccc;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -69,94 +15,10 @@
   <input type="file" id="csvFileInput" accept=".csv" />
   <button onclick="loadCSV()">CSV読み込み</button>
 
-  <div class="list">
-    <div class="list-header">
-      <div>
-        <h2>ピッキングNO: <span id="pickingNo"></span></h2>
-        <p>購入者: <span id="customerName"></span></p>
-      </div>
-      <div id="currentIndex"></div>
-    </div>
-    <ul id="itemList" class="item-list"></ul>
-    <div class="button-container">
-      <button id="prevButton" onclick="previous()" disabled>前へ</button>
-      <button id="nextButton" onclick="next()" disabled>次へ</button>
-    </div>
-  </div>
+  <div id="pickingList" class="list"></div>
 </div>
 
-<script>
-  let pickingData = [];
-  let currentIndex = 0;
-
-  // CSV読み込み
-  function loadCSV() {
-    const fileInput = document.getElementById('csvFileInput');
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-      const text = e.target.result;
-      const rows = text.split('\n').map(row => row.split(','));
-      
-      pickingData = rows.map(row => {
-        return {
-          pickingNo: row[19],   // ピッキングNO
-          customerName: row[6], // 出荷先名
-          items: [
-            { productName: row[10], quantity: row[13] } // 商品名と出荷引当数
-          ]
-        };
-      });
-
-      if (pickingData.length > 0) {
-        renderPickingList();
-      }
-    };
-
-    reader.readAsText(fileInput.files[0], 'UTF-8');
-  }
-
-  function renderPickingList() {
-    const currentData = pickingData[currentIndex];
-    const pickingNoElement = document.getElementById('pickingNo');
-    const customerNameElement = document.getElementById('customerName');
-    const itemListElement = document.getElementById('itemList');
-    const currentIndexElement = document.getElementById('currentIndex');
-    
-    const prefix = currentData.pickingNo.slice(0, -4);
-    const suffix = currentData.pickingNo.slice(-4);
-
-    pickingNoElement.innerHTML = `${prefix}<span class="highlight">${suffix}</span>`;
-    customerNameElement.textContent = currentData.customerName;
-    
-    itemListElement.innerHTML = '';
-    currentData.items.forEach(item => {
-      const itemElement = document.createElement('li');
-      itemElement.className = 'item';
-      itemElement.innerHTML = `<span>${item.productName}</span><span class="highlight">${item.quantity}</span>`;
-      itemListElement.appendChild(itemElement);
-    });
-
-    currentIndexElement.textContent = `${currentIndex + 1} / ${pickingData.length}`;
-    
-    document.getElementById('prevButton').disabled = currentIndex === 0;
-    document.getElementById('nextButton').disabled = currentIndex === pickingData.length - 1;
-  }
-
-  function previous() {
-    if (currentIndex > 0) {
-      currentIndex--;
-      renderPickingList();
-    }
-  }
-
-  function next() {
-    if (currentIndex < pickingData.length - 1) {
-      currentIndex++;
-      renderPickingList();
-    }
-  }
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
