@@ -1,8 +1,5 @@
-let pickingData = [];
-let currentIndex = 0;
-let currentCheckedBarcodes = [];
-let pickingData = [];
-let currentIndex = 0;
+let pickingData = []; // ピッキングデータの配列
+let currentIndex = 0; // 現在表示中のピッキング番号のインデックス
 
 // Firestoreからデータを取得
 function loadPickingList() {
@@ -11,45 +8,12 @@ function loadPickingList() {
 
   db.collection('csvFiles').doc(csvId).get().then(doc => {
     if (doc.exists) {
-      pickingData = doc.data().data;
-      renderPickingList();
+      pickingData = doc.data().data; // Firestoreから取得したデータを格納
+      renderPickingList(); // ピッキングリストを表示
     } else {
       alert("データが見つかりませんでした。");
     }
   });
-}
-
-// 残りの検品機能は以前のscript.jsと同じ
-
-
-// CSV読み込み
-function loadCSV() {
-  const fileInput = document.getElementById('csvFileInput');
-  const reader = new FileReader();
-  
-  reader.onload = function(e) {
-    const text = e.target.result;
-    const rows = text.split('\n').slice(1).map(row => row.split(',')); // ヘッダー行を無視して2行目から処理
-
-    pickingData = rows.reduce((acc, row) => {
-      const pickingNo = row[19]; // ピッキングNO
-      const customerName = row[6]; // 出荷先名
-      const productName = row[10]; // 商品名
-      const quantity = row[13]; // 出荷引当数
-      const barcode = row[82]; // 83列目のバーコード
-
-      if (!acc[pickingNo]) {
-        acc[pickingNo] = { customerName, items: [] };
-      }
-      acc[pickingNo].items.push({ productName, quantity, barcode, checked: false });
-
-      return acc;
-    }, {});
-
-    renderPickingList();
-  };
-
-  reader.readAsText(fileInput.files[0], 'UTF-8');
 }
 
 // バーコード検品機能
@@ -64,7 +28,7 @@ function checkBarcode() {
   // 現在のピッキングリスト内でバーコードをチェック
   pickingInfo.items.forEach(item => {
     if (item.barcode === barcodeInput && !item.checked) {
-      item.checked = true;
+      item.checked = true; // 検品完了をマーク
       found = true;
     }
   });
@@ -74,7 +38,7 @@ function checkBarcode() {
     errorMessage.textContent = "";
     document.getElementById('barcodeInput').value = "";
     renderPickingList(); // 更新
-    checkIfComplete(); // 完了チェック
+    checkIfComplete(); // 検品完了か確認
   } else {
     errorMessage.textContent = "バーコードが見つかりませんでした。";
   }
@@ -83,10 +47,10 @@ function checkBarcode() {
 // ピッキングリストを1ページごとに表示
 function renderPickingList() {
   const pickingListElement = document.getElementById('pickingList');
-  pickingListElement.innerHTML = '';
+  pickingListElement.innerHTML = ''; // 前の内容をクリア
 
   const pickingKeys = Object.keys(pickingData);
-  if (pickingKeys.length === 0) return;
+  if (pickingKeys.length === 0) return; // データがない場合は終了
 
   const pickingNo = pickingKeys[currentIndex];
   const pickingInfo = pickingData[pickingNo];
@@ -146,3 +110,6 @@ function next() {
     renderPickingList();
   }
 }
+
+// ページロード時にFirestoreからピッキングリストを読み込む
+window.onload = loadPickingList;
