@@ -16,30 +16,27 @@ function uploadCSV() {
 
   const reader = new FileReader();
 
-  reader.onload = function(event) {
+reader.onload = function(event) {
     const csvData = event.target.result;
     const parsedData = Papa.parse(csvData, { header: true }).data;
 
     // パースされたCSVデータを確認
     console.log("パースされたデータ: ", parsedData);
 
-    // ピッキング番号ごとにデータをグループ化
     const groupedData = groupByPickingNo(parsedData);
 
-    // グループ化されたデータを確認
     console.log("グループ化されたデータ: ", groupedData);
-
-    const csvId = Date.now().toString(); // 一意のIDを生成
-
+    
+    // 以下はFirestoreに保存する処理
     db.collection('csvFiles').doc(csvId).set({
       data: groupedData
     }).then(() => {
       alert('CSVデータがFirestoreに保存されました！');
-      loadCSVList(); // CSVリストを更新
+      loadCSVList();
     }).catch((error) => {
       console.error('Error writing document: ', error);
     });
-  };
+};
 
   reader.readAsText(file);
 }
