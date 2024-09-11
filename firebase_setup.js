@@ -1,12 +1,12 @@
 // Firebaseの初期化コード（重複定義の回避）
 if (!firebase.apps.length) {
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDNLyIJYdnKFPZxouhcUZPQf_UwN0afSY4",
+    authDomain: "barcode-inspection.firebaseapp.com",
+    projectId: "barcode-inspection",
+    storageBucket: "barcode-inspection.appspot.com",
+    messagingSenderId: "451122231472",
+    appId: "1:451122231472:web:fb7ded68d1b25c33166375"
   };
 
   // Firebase初期化
