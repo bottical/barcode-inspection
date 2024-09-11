@@ -6,26 +6,26 @@ function loadPickingList() {
   const urlParams = new URLSearchParams(window.location.search);
   const csvId = urlParams.get('csvId');
 
-function loadPickingList(pickingListId) {
-    if (!pickingListId) {
-        console.error("pickingListIdが空です。");
-        return; // ドキュメントIDがない場合、処理を中断
+  // csvIdが存在しない場合、エラーメッセージを表示して処理を中断
+  if (!csvId) {
+    console.error("csvIdが空です。URLに正しいIDが含まれているか確認してください。");
+    return;
+  }
+
+  const docRef = db.collection('pickingLists').doc(csvId);
+  
+  docRef.get().then((doc) => {
+    if (doc.exists) {
+      console.log("データ:", doc.data());
+      pickingData = doc.data(); // 取得したデータをグローバル変数に格納
+      renderPickingList(); // ピッキングリストをレンダリング
+    } else {
+      console.log("指定されたピッキングリストが存在しません。");
     }
-
-    const docRef = db.collection('pickingLists').doc(pickingListId);
-    
-    docRef.get().then((doc) => {
-        if (doc.exists) {
-            console.log("データ:", doc.data());
-            // データの処理
-        } else {
-            console.log("指定されたピッキングリストが存在しません。");
-        }
-    }).catch((error) => {
-        console.error("エラー:", error);
-    });
+  }).catch((error) => {
+    console.error("エラー:", error);
+  });
 }
-
 
 // バーコード検品機能
 function checkBarcode() {
