@@ -1,41 +1,38 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ピッキングリスト</title>
-  <link rel="stylesheet" href="styles.css">
-  
-  <!-- Firebase SDKのインポート -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-  <script src="firebase_setup.js"></script> <!-- Firebase設定ファイル -->
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ピッキングリスト</title>
+    <link rel="stylesheet" href="styles.css"> <!-- スタイルシートの読み込み -->
 </head>
 <body>
+    <div class="container">
+        <h1>ピッキングリスト</h1>
 
-<div class="container">
-  <h1>ピッキングリスト</h1>
+        <!-- ピッキングリストを表示するエリア -->
+        <div id="pickingList" class="picking-list-container"></div>
 
-  <!-- バーコード入力フォーム -->
-  <div>
-    <label for="barcodeInput">バーコードを入力してください:</label>
-    <input type="text" id="barcodeInput" />
-    <button onclick="checkBarcode()">検品</button>
-    <p id="errorMessage" class="error-message"></p>
-  </div>
+        <!-- 検品用バーコード入力フォーム -->
+        <div class="barcode-input-container">
+            <input type="text" id="barcodeInput" placeholder="バーコードを入力してください">
+            <button onclick="checkBarcode()">検品</button>
+            <p id="errorMessage" class="error-message"></p>
+        </div>
 
-  <div id="pickingList" class="list"></div>
+        <!-- ページ送り用ボタン -->
+        <div class="navigation-buttons">
+            <button id="prevButton" onclick="previous()">前へ</button>
+            <button id="nextButton" onclick="next()">次へ</button>
+        </div>
+    </div>
 
-  <div class="button-container">
-    <button id="prevButton" onclick="previous()" disabled>前へ</button>
-    <button id="nextButton" onclick="next()" disabled>次へ</button>
-  </div>
-</div>
+    <!-- Firebaseの設定 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase_setup.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-<script src="firebase_setup.js"></script>
-<script src="picking_list.js"></script>
-
+    <!-- ピッキングリストのJavaScript -->
+    <script src="picking_list.js"></script>
 </body>
 </html>
