@@ -41,29 +41,39 @@ function uploadCSV() {
 function groupByPickingNo(data) {
   return data.reduce((acc, row) => {
     // CSVの各列に対応するヘッダー名を使用してデータを取得
-    const pickingNo = row['ピッキングNO'] || "不明"; // ピッキングNO
-    const customerName = row['出荷先名'] || "不明"; // 出荷先名
-    const productName = row['商品名'] || "不明"; // 商品名
-    const quantity = row['出荷引当数'] || "0"; // 出荷引当数
-    const barcode = row['バーコード'] || "不明"; // バーコード
-    // 現在の日時を取得してcreatedAtフィールドとして保存
+    const pickingNo = row['ピッキングNO'] || null; // ピッキングNO
+    const customerName = row['出荷先名'] || null; // 出荷先名
+    const productName = row['商品名'] || null; // 商品名
+    const quantity = row['出荷引当数'] || null; // 出荷引当数
+    const barcode = row['バーコード'] || null; // バーコード
     const createdAt = firebase.firestore.FieldValue.serverTimestamp();
 
-        // 不正なデータや空のピッキング番号をスキップ
-    if (!pickingNo) {
+    // 必須フィールド（例: ピッキングNOや商品名など）が存在しない場合、そのデータをスキップ
+    if (!pickingNo || !productName || !barcode) {
       console.log("スキップされたデータ:", row);
       return acc;
     }
-    
-   // ピッキング番号がまだグループ化されていない場合、新しいグループを作成
+
+    // ピッキング番号がまだグループ化されていない場合、新しいグループを作成
     if (!acc[pickingNo]) {
       acc[pickingNo] = {
-        customerName: customerName,
+        customerName: customerName || "不明", // customerName は任意のため、不明でも良いかもしれません
         items: [],
         checked: false, // ピッキング番号単位での完了フラグ、最初はfalse
         createdAt: createdAt // 作成日時を追加
       };
     }
+
+    // 商品情報をグループに追加
+    acc[pickingNo].items.push({
+      productName: productName,
+      quantity: quantity || "0", // 数量は0をデフォルトにする
+      barcode: barcode
+    });
+
+    return acc;
+  }, {});
+}
 
     // 商品情報をグループに追加
     acc[pickingNo].items.push({
