@@ -2,7 +2,6 @@
 function uploadCSV() {
   const fileInput = document.getElementById('csvFile');
   const file = fileInput.files[0];
-  const checked;
   if (!file) {
     alert("ファイルを選択してください");
     return;
@@ -64,7 +63,6 @@ function groupByPickingNo(data) {
       productName: productName,
       quantity: quantity,
       barcode: barcode,
-      checked: false
     });
 
     return acc;
