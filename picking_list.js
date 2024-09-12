@@ -95,7 +95,7 @@ function renderPickingList() {
   const pickingDiv = document.createElement('div');
   pickingDiv.className = 'list';
 
-  // checked フラグはピッキング全体に対するもの
+  // ピッキング全体の情報表示（チェックフラグなど）
   const pickingHeader = `
     <div class="list-header">
       <div>
