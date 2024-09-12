@@ -15,24 +15,23 @@ function loadPickingList() {
     return;
   }
 
+
   const docRef = db.collection('csvFiles').doc(pickingListId); // 'csvFiles' コレクションからIDでドキュメントを取得
   docRef.get().then((doc) => {
     if (doc.exists) {
       const data = doc.data();
-      console.log("ピッキングリストのデータ: ", data);
-      
-      // FirestoreのデータをpickingDataに格納
-      pickingData = data;
-      currentIndex = 0; // インデックスを初期化
-      renderPickingList(); // ピッキングリストを画面に表示
-
+      console.log("Firestoreから取得したデータ: ", data); // データを確認する
+      pickingData = data; // データをpickingDataに格納
+      console.log("格納されたpickingData: ", pickingData); // 格納後のデータを確認する
+      currentIndex = 0;
+      renderPickingList();
     } else {
       console.error("指定されたピッキングリストが存在しません。");
     }
-  }).catch((error) => {
+}).catch((error) => {
     console.error("データ取得に失敗しました: ", error);
-  });
-}
+});
+
 
 // ページが読み込まれたときにピッキングリストをロード
 window.onload = function() {
