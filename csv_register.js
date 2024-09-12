@@ -54,7 +54,8 @@ function groupByPickingNo(data) {
     if (!acc[pickingNo]) {
       acc[pickingNo] = {
         customerName: customerName,
-        items: []
+        items: [],
+        checked: false // ピッキング番号単位での完了フラグ、最初はfalse
       };
     }
 
@@ -62,8 +63,7 @@ function groupByPickingNo(data) {
     acc[pickingNo].items.push({
       productName: productName,
       quantity: quantity,
-      barcode: barcode,
-      checked: false // 初期状態は未検品
+      barcode: barcode
     });
 
     return acc;
