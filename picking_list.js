@@ -2,29 +2,35 @@ let pickingData = []; // ピッキングデータの配列
 let currentIndex = 0; // 現在表示中のピッキング番号のインデックス
 
 // Firestoreからデータを取得
-function loadPickingList() {
+function getPickingListIdFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
-  const csvId = urlParams.get('id'); // "id"というパラメータを取得
-
+  return urlParams.get('id');
+}
   // csvIdが存在しない場合、エラーメッセージを表示して処理を中断
-  if (!csvId) {
-    console.error("idが空です。URLに正しいIDが含まれているか確認してください。");
+function loadPickingList() {
+  const pickingListId = getPickingListIdFromURL();
+  if (!pickingListId) {
+    console.error('ピッキングリストIDが指定されていません。');
     return;
   }
 
-  const docRef = db.collection('pickingLists').doc(csvId);
-  
+  const docRef = db.collection('csvFiles').doc(pickingListId); // 'csvFiles' コレクションからIDでドキュメントを取得
   docRef.get().then((doc) => {
     if (doc.exists) {
-      console.log("データ:", doc.data());
-      pickingData = doc.data(); // 取得したデータをグローバル変数に格納
-      renderPickingList(); // ピッキングリストをレンダリング
+      const data = doc.data();
+      console.log("ピッキングリストのデータ: ", data);
+      // データを使って画面に反映する処理をここに追加
     } else {
-      console.log("指定されたピッキングリストが存在しません。");
+      console.error("指定されたピッキングリストが存在しません。");
     }
   }).catch((error) => {
-    console.error("エラー:", error);
+    console.error("データ取得に失敗しました: ", error);
   });
+}
+
+// ページが読み込まれたときにピッキングリストをロード
+window.onload = function() {
+  loadPickingList();
 }
 
 
