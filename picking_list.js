@@ -24,9 +24,12 @@ function loadPickingList() {
       pickingData = data.data ? data.data : data; // 必要に応じてネストされたdataを取得
       console.log("格納されたpickingData: ", pickingData);
 
-      // ソートのために配列化
+      // ピッキングNo.でソート
       const sortedData = Object.keys(pickingData).sort((a, b) => {
-        return pickingData[a].createdAt.seconds - pickingData[b].createdAt.seconds;
+        // 辞書順（数値として扱う場合に備え、可能であれば数値変換）
+        const numA = parseInt(a.match(/\d+/)[0], 10); // ピッキングNo.から数字部分を抽出して数値化
+        const numB = parseInt(b.match(/\d+/)[0], 10);
+        return numA - numB; // 数字部分を比較して昇順にソート
       });
 
       // ソートされたデータを格納
