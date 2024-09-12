@@ -47,6 +47,9 @@ function groupByPickingNo(data) {
     const quantity = row['出荷引当数'] || "0"; // 出荷引当数
     const barcode = row['バーコード'] || "不明"; // バーコード
 
+    // 現在の日時を取得してcreatedAtフィールドとして保存
+    const createdAt = firebase.firestore.FieldValue.serverTimestamp();
+
     // 各データのログを出力して確認
     console.log({ pickingNo, customerName, productName, quantity, barcode });
 
@@ -55,7 +58,8 @@ function groupByPickingNo(data) {
       acc[pickingNo] = {
         customerName: customerName,
         items: [],
-        checked: false // ピッキング番号単位での完了フラグ、最初はfalse
+        checked: false, // ピッキング番号単位での完了フラグ、最初はfalse
+        createdAt: createdAt // 作成日時を追加
       };
     }
 
