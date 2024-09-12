@@ -2,11 +2,6 @@ let pickingData = []; // ピッキングデータの配列
 let currentIndex = 0; // 現在表示中のピッキング番号のインデックス
 
 // Firestoreからデータを取得
-function getPickingListIdFromURL() {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('id');
-}
-  // csvIdが存在しない場合、エラーメッセージを表示して処理を中断
 function loadPickingList() {
   const pickingListId = getPickingListIdFromURL();
   if (!pickingListId) {
@@ -19,7 +14,12 @@ function loadPickingList() {
     if (doc.exists) {
       const data = doc.data();
       console.log("ピッキングリストのデータ: ", data);
-      // データを使って画面に反映する処理をここに追加
+      
+      // FirestoreのデータをpickingDataに格納
+      pickingData = data;
+      currentIndex = 0; // インデックスを初期化
+      renderPickingList(); // ピッキングリストを画面に表示
+
     } else {
       console.error("指定されたピッキングリストが存在しません。");
     }
@@ -28,12 +28,11 @@ function loadPickingList() {
   });
 }
 
+
 // ページが読み込まれたときにピッキングリストをロード
 window.onload = function() {
   loadPickingList();
 }
-
-
 
 
 // バーコード検品機能
