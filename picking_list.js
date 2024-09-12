@@ -86,12 +86,6 @@ function renderPickingList() {
   const pickingNo = pickingKeys[currentIndex];
   const pickingInfo = pickingData[pickingNo];
 
-
-  // 不明なデータは除外
-if (pickingNo === '不明' || !pickingInfo.items || pickingInfo.items.length === 0) {
-  console.log('不明なデータ、またはアイテムがないデータをスキップしました');
-  return;
-}
   
   // itemsが存在しない場合の処理
   if (!pickingInfo || !pickingInfo.items) {
