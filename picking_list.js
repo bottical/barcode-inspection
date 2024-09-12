@@ -80,7 +80,7 @@ function renderPickingList() {
 
   // 不明なデータは除外
 if (pickingNo === '不明' || pickingInfo.customerName === '不明') {
-  console.log('不明なデータをスキップしました');
+  console.log('不明なデータをスキップしました - ピッキングNO: ', pickingNo);
   return;
 }
 
