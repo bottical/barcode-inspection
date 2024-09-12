@@ -76,6 +76,14 @@ function renderPickingList() {
 
   const pickingNo = pickingKeys[currentIndex];
   const pickingInfo = pickingData[pickingNo];
+
+
+  // 不明なデータは除外
+if (pickingNo === '不明' || pickingInfo.customerName === '不明') {
+  console.log('不明なデータをスキップしました');
+  return;
+}
+
   
   // itemsが存在しない場合の処理
   if (!pickingInfo || !pickingInfo.items) {
