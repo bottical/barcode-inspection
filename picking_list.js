@@ -20,6 +20,13 @@ function loadPickingList() {
   docRef.get().then((doc) => {
     if (doc.exists) {
       const data = doc.data();
+      
+      // data.data の構造を確認しながら正しく格納
+      pickingData = data.data ? data.data : data; // 必要に応じてネストされたdataを取得
+      console.log("格納されたpickingData: ", pickingData);
+
+
+      
       // ソートのために配列化
       const sortedData = Object.keys(data).sort((a, b) => {
         return data[a].createdAt - data[b].createdAt;
