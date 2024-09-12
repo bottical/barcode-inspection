@@ -86,21 +86,29 @@ function renderPickingList() {
   const pickingNo = pickingKeys[currentIndex];
   const pickingInfo = pickingData[pickingNo];
 
+  // 不明なデータやitemsが存在しない場合の処理
+  if (!pickingInfo || !pickingInfo.items || !Array.isArray(pickingInfo.items)) {
+    console.error(`ピッキングデータにアイテムが存在しません - ピッキングNO: ${pickingNo}`);
+    return;
+  }
+
   const pickingDiv = document.createElement('div');
   pickingDiv.className = 'list';
 
+  // checked フラグはピッキング全体に対するもの
   const pickingHeader = `
     <div class="list-header">
       <div>
         <h2>ピッキングNO: <span class="highlight">${pickingNo}</span></h2>
         <p>購入者: ${pickingInfo.customerName}</p>
+        <p>検品完了: ${pickingInfo.checked ? '完了' : '未完了'}</p>
       </div>
       <div>${currentIndex + 1} / ${pickingKeys.length}</div>
     </div>
   `;
   
   const itemList = pickingInfo.items.map(item => `
-    <li class="item ${item.checked ? 'checked' : ''}">
+    <li class="item">
       <span>${item.productName}</span>
       <span class="barcode">${item.barcode}</span>
       <span class="quantity">${item.quantity}</span>
