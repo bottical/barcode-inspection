@@ -86,14 +86,6 @@ function renderPickingList() {
   const pickingNo = pickingKeys[currentIndex];
   const pickingInfo = pickingData[pickingNo];
 
-  
-  // itemsが存在しない場合の処理
-  if (!pickingInfo || !pickingInfo.items) {
-  console.error(`ピッキングデータにアイテムが存在しません - ピッキングNO: ${pickingNo}`);
-  console.log('取得したピッキング情報:', pickingInfo);
-    return;
-  }
-
   const pickingDiv = document.createElement('div');
   pickingDiv.className = 'list';
 
