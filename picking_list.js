@@ -15,26 +15,23 @@ function loadPickingList() {
     return;
   }
 
-
   const docRef = db.collection('csvFiles').doc(pickingListId); // 'csvFiles' コレクションからIDでドキュメントを取得
   docRef.get().then((doc) => {
     if (doc.exists) {
       const data = doc.data();
-      
-      // data.data の構造を確認しながら正しく格納
+
+      // データ構造に応じたデータ取得
       pickingData = data.data ? data.data : data; // 必要に応じてネストされたdataを取得
       console.log("格納されたpickingData: ", pickingData);
 
-
-      
       // ソートのために配列化
-      const sortedData = Object.keys(data).sort((a, b) => {
-        return data[a].createdAt - data[b].createdAt;
+      const sortedData = Object.keys(pickingData).sort((a, b) => {
+        return pickingData[a].createdAt.seconds - pickingData[b].createdAt.seconds;
       });
 
       // ソートされたデータを格納
       pickingData = sortedData.reduce((acc, key) => {
-        acc[key] = data[key];
+        acc[key] = pickingData[key];
         return acc;
       }, {});
 
@@ -44,9 +41,9 @@ function loadPickingList() {
     } else {
       console.error("指定されたピッキングリストが存在しません。");
     }
-}).catch((error) => {
+  }).catch((error) => {
     console.error("データ取得に失敗しました: ", error);
-});
+  });
 }
 
 // ページが読み込まれたときにピッキングリストをロード
@@ -115,7 +112,7 @@ function renderPickingList() {
   `;
   
   const itemList = pickingInfo.items.map(item => `
-    <li class="item">
+    <li class="item ${item.checked ? 'checked' : ''}">
       <span>${item.productName}</span>
       <span class="barcode">${item.barcode}</span>
       <span class="quantity">${item.quantity}</span>
