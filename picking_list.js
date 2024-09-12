@@ -20,9 +20,18 @@ function loadPickingList() {
   docRef.get().then((doc) => {
     if (doc.exists) {
       const data = doc.data();
-      console.log("Firestoreから取得したデータ: ", data); // データを確認する
-      pickingData = data.data; // 取得したデータのdataフィールドを格納
-      console.log("格納されたpickingData: ", pickingData); // 格納後のデータを確認する
+      // ソートのために配列化
+      const sortedData = Object.keys(data).sort((a, b) => {
+        return data[a].createdAt - data[b].createdAt;
+      });
+
+      // ソートされたデータを格納
+      pickingData = sortedData.reduce((acc, key) => {
+        acc[key] = data[key];
+        return acc;
+      }, {});
+
+      console.log("ソートされたpickingData: ", pickingData);
       currentIndex = 0;
       renderPickingList();
     } else {
