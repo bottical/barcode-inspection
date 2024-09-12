@@ -63,6 +63,7 @@ function groupByPickingNo(data) {
       productName: productName,
       quantity: quantity,
       barcode: barcode,
+      checked: false // 初期状態は未検品
     });
 
     return acc;
