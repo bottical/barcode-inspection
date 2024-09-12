@@ -21,7 +21,7 @@ function loadPickingList() {
     if (doc.exists) {
       const data = doc.data();
       console.log("Firestoreから取得したデータ: ", data); // データを確認する
-      pickingData = data; // データをpickingDataに格納
+      pickingData = data.data; // 取得したデータのdataフィールドを格納
       console.log("格納されたpickingData: ", pickingData); // 格納後のデータを確認する
       currentIndex = 0;
       renderPickingList();
@@ -79,11 +79,10 @@ function renderPickingList() {
 
 
   // 不明なデータは除外
-if (pickingNo === '不明' || pickingInfo.customerName === '不明') {
-  console.log('不明なデータをスキップしました - ピッキングNO: ', pickingNo);
+if (pickingNo === '不明' || !pickingInfo.items || pickingInfo.items.length === 0) {
+  console.log('不明なデータ、またはアイテムがないデータをスキップしました');
   return;
 }
-
   
   // itemsが存在しない場合の処理
   if (!pickingInfo || !pickingInfo.items) {
