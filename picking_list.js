@@ -87,7 +87,8 @@ if (pickingNo === '不明' || pickingInfo.customerName === '不明') {
   
   // itemsが存在しない場合の処理
   if (!pickingInfo || !pickingInfo.items) {
-    console.error('ピッキングデータにアイテムが存在しません');
+  console.error(`ピッキングデータにアイテムが存在しません - ピッキングNO: ${pickingNo}`);
+  console.log('取得したピッキング情報:', pickingInfo);
     return;
   }
 
