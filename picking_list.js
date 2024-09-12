@@ -26,6 +26,12 @@ function loadPickingList() {
 
       // ピッキングNo.でソート
       const sortedData = Object.keys(pickingData).sort((a, b) => {
+        // ピッキングNo.が "不明" などのケースをスキップ
+        if (!a.match(/\d+/) || !b.match(/\d+/)) {
+          console.warn('ピッキングNo.が不明なデータをスキップしました:', a, b);
+          return 0;
+        }
+
         // 辞書順（数値として扱う場合に備え、可能であれば数値変換）
         const numA = parseInt(a.match(/\d+/)[0], 10); // ピッキングNo.から数字部分を抽出して数値化
         const numB = parseInt(b.match(/\d+/)[0], 10);
