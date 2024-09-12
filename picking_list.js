@@ -126,6 +126,21 @@ function checkIfComplete() {
 
   const allChecked = pickingInfo.items.every(item => item.checked);
   if (allChecked) {
+    // 検品完了フラグをFirebaseに保存する
+    const pickingListId = getPickingListIdFromURL(); // URLからIDを取得
+    const docRef = db.collection('csvFiles').doc(pickingListId); // Firestore内の該当ドキュメントを参照
+
+    docRef.update({
+      [`data.${pickingNo}.checked`]: true // ピッキングNo単位でcheckedフラグをtrueに更新
+    })
+    .then(() => {
+      console.log('検品完了フラグが更新されました');
+    })
+    .catch((error) => {
+      console.error('検品完了フラグの更新に失敗しました:', error);
+    });
+
+    // 次のピッキングNoに移行する処理
     setTimeout(() => {
       alert('検品完了！次のピッキングNoに移行します。');
       next();
