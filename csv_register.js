@@ -46,14 +46,16 @@ function groupByPickingNo(data) {
     const productName = row['商品名'] || "不明"; // 商品名
     const quantity = row['出荷引当数'] || "0"; // 出荷引当数
     const barcode = row['バーコード'] || "不明"; // バーコード
-
     // 現在の日時を取得してcreatedAtフィールドとして保存
     const createdAt = firebase.firestore.FieldValue.serverTimestamp();
 
-    // 各データのログを出力して確認
-    console.log({ pickingNo, customerName, productName, quantity, barcode });
-
-    // ピッキング番号がまだグループ化されていない場合、新しいグループを作成
+        // 不正なデータや空のピッキング番号をスキップ
+    if (!pickingNo) {
+      console.log("スキップされたデータ:", row);
+      return acc;
+    }
+    
+   // ピッキング番号がまだグループ化されていない場合、新しいグループを作成
     if (!acc[pickingNo]) {
       acc[pickingNo] = {
         customerName: customerName,
