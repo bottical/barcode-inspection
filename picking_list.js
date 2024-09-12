@@ -31,7 +31,7 @@ function loadPickingList() {
 }).catch((error) => {
     console.error("データ取得に失敗しました: ", error);
 });
-
+}
 
 // ページが読み込まれたときにピッキングリストをロード
 window.onload = function() {
