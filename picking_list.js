@@ -1,6 +1,12 @@
 let pickingData = []; // ピッキングデータの配列
 let currentIndex = 0; // 現在表示中のピッキング番号のインデックス
 
+// URLパラメータからピッキングリストIDを取得する関数
+function getPickingListIdFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('id');
+}
+
 // Firestoreからデータを取得
 function loadPickingList() {
   const pickingListId = getPickingListIdFromURL();
@@ -28,12 +34,10 @@ function loadPickingList() {
   });
 }
 
-
 // ページが読み込まれたときにピッキングリストをロード
 window.onload = function() {
   loadPickingList();
 }
-
 
 // バーコード検品機能
 function checkBarcode() {
@@ -135,6 +139,3 @@ function next() {
     renderPickingList();
   }
 }
-
-// ページロード時にFirestoreからピッキングリストを読み込む
-window.onload = loadPickingList;
