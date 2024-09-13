@@ -96,7 +96,7 @@ function loadCSVListWithDetails() {
   db.collection('csvFiles').get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      const createdAt = data.createdAt ? data.createdAt.toDate() : "日時不明";
+      const createdAt = data.createdAt ? formatDate(data.createdAt.toDate()) : "日時不明"; // フォーマット適用
       const totalPickingNo = data.totalPickingNo || 0;
       const completedPickingNo = data.completedPickingNo || 0;
 
@@ -129,3 +129,14 @@ function loadCSVListWithDetails() {
 window.onload = function() {
   loadCSVListWithDetails(); // リンク付きのCSVリストを日付や検品数と共に表示
 };
+
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; // 月は0から始まるので+1
+  const day = date.getDate();
+  const hours = date.getHours().toString().padStart(2, '0'); // 2桁で表示
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+  
+  return `${year}年${month}月${day}日 ${hours}:${minutes}:${seconds}`;
+}
