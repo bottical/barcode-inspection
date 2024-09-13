@@ -95,8 +95,14 @@ function loadCSVList() {
 
   db.collection('csvFiles').get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const createdAt = data.createdAt ? data.createdAt.toDate() : "日時不明";
+      const totalPickingNo = data.totalPickingNo || 0;
+      const completedPickingNo = data.completedPickingNo || 0;
+
       const li = document.createElement('li'); // 新しい<li>要素を作成
-      li.textContent = `ID: ${doc.id} - Data: ${JSON.stringify(doc.data().data)}`; // <li>の内容を設定
+      
+     li.textContent = `ID: ${doc.id} - 登録日時: ${createdAt} - ピッキングNo: ${completedPickingNo} / ${totalPickingNo}`;
       ul.appendChild(li); // <ul>に<li>を追加
     });
   }).catch((error) => {
