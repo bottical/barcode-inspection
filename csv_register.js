@@ -22,16 +22,13 @@ function uploadCSV() {
 
     console.log("グループ化されたデータ: ", groupedData);
 
-    // 検品対象数と完了数を計算
-    let totalItems = 0;
-    let checkedItems = 0;
+    // ピッキングNoの総数と完了数をカウント
+    const totalPickingNo = Object.keys(groupedData).length;
+    let completedPickingNo = 0;
     Object.values(groupedData).forEach(group => {
-      totalItems += group.items.length;
-      group.items.forEach(item => {
-        if (item.checked) {
-          checkedItems++;
-        }
-      });
+      if (group.checked) {
+        completedPickingNo++;
+      }
     });
     
     // Firestoreに保存する処理
@@ -39,8 +36,8 @@ function uploadCSV() {
     db.collection('csvFiles').doc(csvId).set({
       data: groupedData,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(), // 登録日時
-      totalItems: totalItems, // 検品対象数
-      checkedItems: checkedItems // 検品完了数（初期値は0のはず）
+      totalPickingNo: totalPickingNo, // ピッキングNoの総数
+      completedPickingNo: completedPickingNo // 完了済みのピッキングNo数（初期は0）
     }).then(() => {
       alert('CSVデータがFirestoreに保存されました！');
       loadCSVList();
