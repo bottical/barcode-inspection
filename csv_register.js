@@ -102,7 +102,7 @@ function loadCSVList() {
 
       const li = document.createElement('li'); // 新しい<li>要素を作成
       
-     li.textContent = `ID: ${doc.id} - 登録日時: ${createdAt} - ピッキングNo: ${completedPickingNo} / ${totalPickingNo}`;
+      li.textContent = `ID: ${doc.id} - 登録日時: ${createdAt} - ピッキングNo: ${completedPickingNo} / ${totalPickingNo}`;
       ul.appendChild(li); // <ul>に<li>を追加
     });
   }).catch((error) => {
@@ -110,8 +110,8 @@ function loadCSVList() {
   });
 }
 
-// CSVリストをロードしてリンクを表示する関数
-function loadCSVList() {
+// CSVリストをロードしてリンクを表示する関数（名前を変更）
+function loadCSVListWithLinks() {
   const ul = document.getElementById('csvList'); // CSVリストを表示する<ul>要素を取得
   ul.innerHTML = ''; // 既存のリストをクリア
 
