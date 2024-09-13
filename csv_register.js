@@ -88,8 +88,8 @@ function groupByPickingNo(data) {
   }, {});
 }
 
-// CSVリストをロードする関数
-function loadCSVList() {
+// CSVリストをロードしてリンクと共に日付や検品数を表示する関数
+function loadCSVListWithDetails() {
   const ul = document.getElementById('csvList'); // CSVリストを表示する<ul>要素を取得
   ul.innerHTML = ''; // 既存のリストをクリア
 
@@ -100,34 +100,32 @@ function loadCSVList() {
       const totalPickingNo = data.totalPickingNo || 0;
       const completedPickingNo = data.completedPickingNo || 0;
 
-      const li = document.createElement('li'); // 新しい<li>要素を作成
+      // 新しい<li>要素を作成
+      const li = document.createElement('li');
       
-      li.textContent = `ID: ${doc.id} - 登録日時: ${createdAt} - ピッキングNo: ${completedPickingNo} / ${totalPickingNo}`;
-      ul.appendChild(li); // <ul>に<li>を追加
-    });
-  }).catch((error) => {
-    console.error('Error getting documents: ', error);
-  });
-}
-
-// CSVリストをロードしてリンクを表示する関数（名前を変更）
-function loadCSVListWithLinks() {
-  const ul = document.getElementById('csvList'); // CSVリストを表示する<ul>要素を取得
-  ul.innerHTML = ''; // 既存のリストをクリア
-
-  db.collection('csvFiles').get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      const li = document.createElement('li'); // 新しい<li>要素を作成
-      const link = document.createElement('a'); // <a>要素を作成
-
+      // リンク要素を作成
+      const link = document.createElement('a');
       link.textContent = `検品実行: ${doc.id}`; // リンクテキストを設定
       link.href = `picking_list.html?id=${doc.id}`; // 検品ページへのリンクを設定
       link.target = '_blank'; // 新しいタブで開くように設定
 
-      li.appendChild(link); // <li>にリンクを追加
-      ul.appendChild(li); // <ul>に<li>を追加
+      // 日付と検品数を含めた内容
+      const info = document.createElement('span');
+      info.textContent = ` - 登録日時: ${createdAt} - ピッキングNo: ${completedPickingNo} / ${totalPickingNo}`;
+
+      // <li>にリンクと情報を追加
+      li.appendChild(link);
+      li.appendChild(info);
+      
+      // <ul>に<li>を追加
+      ul.appendChild(li);
     });
   }).catch((error) => {
     console.error('Error getting documents: ', error);
   });
 }
+
+// ページ読み込み時に呼び出す
+window.onload = function() {
+  loadCSVListWithDetails(); // リンク付きのCSVリストを日付や検品数と共に表示
+};
