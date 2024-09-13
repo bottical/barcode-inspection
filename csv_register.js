@@ -46,18 +46,19 @@ function groupByPickingNo(data) {
     const productName = row['商品名'] || null; // 商品名
     const quantity = row['出荷引当数'] || null; // 出荷引当数
     const barcode = row['バーコード'] || null; // バーコード
+    // 現在の日時を取得してcreatedAtフィールドとして保存
     const createdAt = firebase.firestore.FieldValue.serverTimestamp();
 
-    // 必須フィールド（例: ピッキングNOや商品名など）が存在しない場合、そのデータをスキップ
-    if (!pickingNo || !productName || !barcode) {
+        // 不正なデータや空のピッキング番号をスキップ
+    if (!pickingNo) {
       console.log("スキップされたデータ:", row);
       return acc;
     }
-
-    // ピッキング番号がまだグループ化されていない場合、新しいグループを作成
+    
+   // ピッキング番号がまだグループ化されていない場合、新しいグループを作成
     if (!acc[pickingNo]) {
       acc[pickingNo] = {
-        customerName: customerName || "不明", // customerName は任意のため、不明でも良いかもしれません
+        customerName: customerName || "不明", // customerName は任意のため、不明
         items: [],
         checked: false, // ピッキング番号単位での完了フラグ、最初はfalse
         createdAt: createdAt // 作成日時を追加
@@ -68,17 +69,6 @@ function groupByPickingNo(data) {
     acc[pickingNo].items.push({
       productName: productName,
       quantity: quantity || "0", // 数量は0をデフォルトにする
-      barcode: barcode
-    });
-
-    return acc;
-  }, {});
-}
-
-    // 商品情報をグループに追加
-    acc[pickingNo].items.push({
-      productName: productName,
-      quantity: quantity,
       barcode: barcode
     });
 
